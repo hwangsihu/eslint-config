@@ -1,0 +1,16 @@
+.github
+.idea
+.gitattributes
+.DS_Store
+node_modules/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+yarn-debug.log*
+yarn-error.log*
+bun.lockb
+**.tgz
+index.js
+eslint.config.js
+tsup.config.js
+tsconfig.json
