@@ -1,31 +1,25 @@
-
 import * as augu from '@augu/eslint-config';
 import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import * as tsParser from '@typescript-eslint/parser';
 import eslintPluginImportX from 'eslint-plugin-import-x';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
+import { config as tsEslintConfig, configs as tsConfigs } from 'typescript-eslint';
 
 /**
- * @param {string} rootdir Project root directory that contains tsconfig.json
+ * @param {string} rootdir Project root directory containing tsconfig.json
  * @param {import("typescript-eslint").ConfigWithExtends[]} additionalConfig Additional eslint configurations
  */
+
 export default function config(rootdir, ...additionalConfig) {
-    return tseslint.config(
+    return tsEslintConfig(
         {
-            ignores: [
-                'docs/*',
-                'dist/*',
-                'node_modules/*'
-            ]
+            ignores: ['docs/*', 'dist/*', 'node_modules/*'],
         },
         eslint.configs.recommended,
-        ...tseslint.configs.recommendedTypeChecked,
-        ...tseslint.configs.stylisticTypeChecked,
+        ...tsConfigs.recommendedTypeChecked,
+        ...tsConfigs.stylisticTypeChecked,
         augu.javascript(),
-        // temp disable due to rule move from typescript-eslint (ts) -> stylistic (style)
-        // await augu.typescript(),
         eslintPluginImportX.flatConfigs.recommended,
         eslintPluginImportX.flatConfigs.typescript,
         stylistic.configs['disable-legacy'],
@@ -36,18 +30,19 @@ export default function config(rootdir, ...additionalConfig) {
                 parser: tsParser,
                 parserOptions: {
                     projectService: true,
-                    tsconfigRootDir: rootdir
+                    tsconfigRootDir: rootdir,
                 },
                 globals: {
                     ...globals.nodeBuiltin,
                     ...globals.builtin,
-                    ...globals.es2021
-                }
+                    ...globals.es2021,
+                },
             },
             plugins: {
-                '@stylistic': stylistic
+                '@stylistic': stylistic,
             },
             rules: {
+                // Stylistic rules
                 '@stylistic/semi': ['error'],
                 '@stylistic/member-delimiter-style': ['error'],
                 '@stylistic/indent': ['error', 'tab', { 'SwitchCase': 1 }],
@@ -69,14 +64,15 @@ export default function config(rootdir, ...additionalConfig) {
                 '@stylistic/no-multiple-empty-lines': ['error', { 'max': 1 }],
                 '@stylistic/eol-last': ['warn', 'always'],
                 '@stylistic/no-trailing-spaces': ['warn', { 'ignoreComments': true }],
+                // TypeScript specific rules
                 '@typescript-eslint/require-await': ['warn'],
+                // Import-X rules
                 'import-x/no-extraneous-dependencies': ['error'],
                 'import-x/no-mutable-exports': ['warn'],
                 'import-x/no-unused-modules': ['warn'],
                 'import-x/no-amd': ['error'],
                 'import-x/no-commonjs': ['error'],
                 'import-x/no-import-module-exports': ['error'],
-                // 'import-x/no-nodejs-modules': [ 'error' ],
                 'import-x/unambiguous': ['warn'],
                 'import-x/no-absolute-path': ['error'],
                 'import-x/no-cycle': ['error'],
@@ -87,39 +83,22 @@ export default function config(rootdir, ...additionalConfig) {
                 'import-x/extensions': ['error', 'ignorePackages'],
                 'import-x/first': ['warn'],
                 'import-x/newline-after-import': ['warn'],
-                'import-x/no-default-export': ['warn'],
                 'import-x/no-unassigned-import': ['warn'],
-                'import-x/order': [
-                    'warn',
-                    {
-                        alphabetize: {
-                            caseInsensitive: true,
-                            order: 'asc'
-                        },
-                        groups: [
-                            'builtin',
-                            'external',
-                            'internal',
-                            'parent',
-                            'sibling'
-                        ]
-                        // 'newlines-between': 'always'
-                    }
-                ],
-                // use import-x/no-duplicate-imports
-                'no-duplicate-imports': ['off']
-            }
+                'import-x/no-default-export': ['warn'],
+                'import-x/order': ['warn', {
+                    alphabetize: { caseInsensitive: true, order: 'asc' },
+                    groups: ['builtin', 'external', 'internal', 'parent', 'sibling'],
+                }],
+                // Enforce no duplicate imports
+                'no-duplicate-imports': ['error'],
+            },
         },
         {
-            files: [
-                '**/*.js',
-                '**/*.cjs',
-                '**/*.mjs'
-            ],
+            files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
             rules: {
                 'require-await': ['warn'],
-                'no-unused-vars': ['warn']
-            }
+                'no-unused-vars': ['warn'],
+            },
         },
         ...additionalConfig
     );
